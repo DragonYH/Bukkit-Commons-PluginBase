@@ -97,6 +97,15 @@ public abstract class ABukkitPlugin<T extends ABukkitPlugin<T>>extends JavaPlugi
     public String C(String pNode,String pPlaceHolder,Object pParam){
         return this.getLangManager().getNode(pNode,new String[]{pPlaceHolder},pParam);
     }
+    
+    /**
+     * 注册Bukkit时间监听器
+     * @param pListener 监听器
+     * @see org.bukkit.plugin.PluginManager
+     */
+    public void registerEvents(Listener pListener){
+        Bukkit.getPluginManager().registerEvents(pListener,this);
+    }
 
     /**
      * 请使用{@link ABukkitPlugin#getConfigManager()#getConfig()}<br>
