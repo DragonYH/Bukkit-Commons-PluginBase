@@ -10,6 +10,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -391,12 +392,35 @@ public class BukkitUtil{
                 Material tMate=Material.getMaterial(Integer.parseInt(pTypeStr));
                 if(tMate!=null&&tMate!=Material.AIR)
                     return tMate;
-            }catch(NumberFormatException exp){
-                return null;
+            }catch(NumberFormatException ignore){
             }
         }
         Material tMate=Material.getMaterial(pTypeStr.toUpperCase());
         return (tMate!=null&&tMate!=Material.AIR)?tMate:null;
-
     }
+    
+    /**
+     * 获取附魔类型
+     * <p>
+     * 根据所给的字符串获取附魔类型,字符串可以为{@link Enchantment}的枚举值,或者{@link Enchantment#getId()}的值
+     * </p>
+     * 
+     * @param pEnchantStr
+     *            物品类型字符串
+     * @return 附魔类型如果不存在则null
+     */
+    public static Enchantment getEnchantment(String pEnchantStr){
+        pEnchantStr=pEnchantStr.trim();
+        if(pEnchantStr.matches("\\d+")){
+            try{
+                Enchantment tEnchant=Enchantment.getById(Integer.parseInt(pEnchantStr));
+                if(tEnchant!=null)
+                    return tEnchant;
+            }catch(NumberFormatException ignore){
+            }
+        }
+        Enchantment tEnchant=Enchantment.getByName(pEnchantStr.toUpperCase());
+        return tEnchant!=null?tEnchant:null;
+    }
+    
 }
