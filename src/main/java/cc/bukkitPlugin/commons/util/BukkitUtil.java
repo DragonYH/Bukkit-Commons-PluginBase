@@ -373,4 +373,30 @@ public class BukkitUtil{
     public static boolean isValidBlock(Block pBlock){
         return pBlock!=null&&pBlock.getType()!=Material.AIR;
     }
+
+    /**
+     * 获取物品类型
+     * <p>
+     * 根据所给的字符串获取物品类型,字符串可以为{@link Material}的枚举值,或者{@link Material#getId()}的值
+     * </p>
+     * 
+     * @param pTypeStr
+     *            物品类型字符串
+     * @return 物品类型如果不存在则null
+     */
+    public static Material getItemType(String pTypeStr){
+        pTypeStr=pTypeStr.trim();
+        if(pTypeStr.matches("\\d+")){
+            try{
+                Material tMate=Material.getMaterial(Integer.parseInt(pTypeStr));
+                if(tMate!=null&&tMate!=Material.AIR)
+                    return tMate;
+            }catch(NumberFormatException exp){
+                return null;
+            }
+        }
+        Material tMate=Material.getMaterial(pTypeStr.toUpperCase());
+        return (tMate!=null&&tMate!=Material.AIR)?tMate:null;
+
+    }
 }
