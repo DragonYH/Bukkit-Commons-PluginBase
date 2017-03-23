@@ -2,7 +2,9 @@ package cc.bukkitPlugin.commons.util;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -332,17 +334,33 @@ public class BukkitUtil{
      * @return 设置信息后的物品
      */
     public static ItemStack setItemInfo(ItemStack pItem,String pDisplayName,String...pLores){
+        return BukkitUtil.setItemInfo(pItem,pDisplayName,Arrays.asList(pLores));
+    }
+
+    /**
+     * 快速设置物品信息
+     * 
+     * @param pItem
+     *            物品
+     * @param pDisplayName
+     *            名字
+     * @param pLores
+     *            Lore
+     * @return 设置信息后的物品
+     */
+    public static ItemStack setItemInfo(ItemStack pItem,String pDisplayName,List<String> pLores){
         if(pItem==null)
             return null;
 
         ItemMeta tMeta=pItem.getItemMeta();
         tMeta.setDisplayName(StringUtil.isBlank(pDisplayName)?"":ChatColor.translateAlternateColorCodes('&',pDisplayName));
 
-        if(pLores!=null&&pLores.length!=0){
-            ArrayList<String> newLore=new ArrayList<>(pLores.length);
+        if(pLores!=null&&pLores.size()!=0){
+            ArrayList<String> newLore=new ArrayList<>(pLores.size());
             for(String sSigleLore : pLores){
-                if(sSigleLore==null)
+                if(sSigleLore==null){
                     sSigleLore="";
+                }
                 newLore.add(ChatColor.translateAlternateColorCodes('&',sSigleLore));
             }
             tMeta.setLore(newLore);
@@ -398,7 +416,7 @@ public class BukkitUtil{
         Material tMate=Material.getMaterial(pTypeStr.toUpperCase());
         return (tMate!=null&&tMate!=Material.AIR)?tMate:null;
     }
-    
+
     /**
      * 获取附魔类型
      * <p>
@@ -422,5 +440,20 @@ public class BukkitUtil{
         Enchantment tEnchant=Enchantment.getByName(pEnchantStr.toUpperCase());
         return tEnchant!=null?tEnchant:null;
     }
-    
+
+    /**
+     * 获取物品当前设置的名字
+     * 
+     * @param pItem
+     *            物品
+     * @return 设置的名字或null
+     */
+    public static String getItemDisplayName(ItemStack pItem){
+        if(!BukkitUtil.isValidItem(pItem)||!pItem.hasItemMeta())
+            return null;
+        
+        ItemMeta tMeta=pItem.getItemMeta();
+        return tMeta.hasDisplayName()?tMeta.getDisplayName():null;
+    }
+
 }
