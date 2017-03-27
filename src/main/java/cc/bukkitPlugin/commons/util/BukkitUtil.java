@@ -451,9 +451,24 @@ public class BukkitUtil{
     public static String getItemDisplayName(ItemStack pItem){
         if(!BukkitUtil.isValidItem(pItem)||!pItem.hasItemMeta())
             return null;
-        
+
         ItemMeta tMeta=pItem.getItemMeta();
         return tMeta.hasDisplayName()?tMeta.getDisplayName():null;
+    }
+
+    /**
+     * 获取物品的Lore
+     * 
+     * @param pItem
+     *            物品
+     * @return 物品的Lore,非null
+     */
+    public static List<String> getItemLore(ItemStack pItem){
+        if(!BukkitUtil.isValidItem(pItem)||!pItem.hasItemMeta())
+            return null;
+
+        ItemMeta tMeta=pItem.getItemMeta();
+        return tMeta.hasLore()?tMeta.getLore():new ArrayList<String>(0);
     }
 
 }
