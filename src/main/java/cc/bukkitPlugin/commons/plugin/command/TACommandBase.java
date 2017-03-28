@@ -394,23 +394,42 @@ public abstract class TACommandBase<T extends ABukkitPlugin<T>,E extends TComman
         Collection<String> tSubCmds=this.getSubCmd(pSender,pLabel);
         if(tSubCmds==null||tSubCmds.isEmpty()){
             tHelps=new ArrayList<>(2);
-            if(hasCmdPermission(pSender)){
+            if(hasCmdPermission(pSender)&&this.preSubCmdHelpWrite(pSender,pLabel,tHelps,null)){
                 tHelps.add(this.constructCmdUsage());
                 tHelps.add(this.constructCmdDesc());
-                this.onSubCmdHelpWrite(pSender,pLabel,tHelps,null);
+                this.postSubCmdHelpWrite(pSender,pLabel,tHelps,null);
             }
         }else{
             tHelps=new ArrayList<>(2*tSubCmds.size());
             for(String sSubCmd : tSubCmds){
-                if(hasCmdPermission(pSender,sSubCmd)){
+                if(hasCmdPermission(pSender,sSubCmd)&&this.preSubCmdHelpWrite(pSender,pLabel,tHelps,sSubCmd)){
                     tHelps.add(this.constructCmdUsage(sSubCmd));
                     tHelps.add(this.constructCmdDesc(sSubCmd));
-                    this.onSubCmdHelpWrite(pSender,pLabel,tHelps,sSubCmd);
+                    this.postSubCmdHelpWrite(pSender,pLabel,tHelps,sSubCmd);
                 }
             }
         }
 
         return tHelps;
+    }
+
+    /**
+     * 在getHelp中,子命令pSubCmd的帮助被写入钱调用,如果返回false,将不为该标签写入帮助
+     * <p>
+     * 子命令的使用权限已经检查
+     * </p>
+     * 
+     * @param pSender
+     *            帮助请求玩家
+     * @param pLabel
+     *            要获取帮助的命令的标签
+     * @param pHelps
+     *            已经写入的帮助文本
+     * @param pSubCmd
+     *            此时的子命令标签,null表示此命令的帮助,通常是该命令无子命令
+     */
+    protected boolean preSubCmdHelpWrite(CommandSender pSender,String pLabel,List<String> pHelps,String pSubCmd){
+        return true;
     }
 
     /**
@@ -428,7 +447,7 @@ public abstract class TACommandBase<T extends ABukkitPlugin<T>,E extends TComman
      * @param pSubCmd
      *            此时的子命令标签,null表示此命令的帮助,通常是该命令无子命令
      */
-    protected void onSubCmdHelpWrite(CommandSender pSender,String pLabel,List<String> pHelps,String pSubCmd){
+    protected void postSubCmdHelpWrite(CommandSender pSender,String pLabel,List<String> pHelps,String pSubCmd){
 
     }
 

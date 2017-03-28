@@ -49,7 +49,7 @@ public class TCommandReload<T extends ABukkitPlugin<T>,E extends TCommandExc<T>>
     }
 
     @Override
-    protected void onSubCmdHelpWrite(CommandSender pSender,String pLabel,List<String> pHelps,String pSubCmd){
+    protected void postSubCmdHelpWrite(CommandSender pSender,String pLabel,List<String> pHelps,String pSubCmd){
         if(pSubCmd!=null&&pSubCmd.equalsIgnoreCase("plugin")&&pHelps.size()>=2){
             int index=pHelps.size()-2;
             String tUsage=pHelps.get(index);
