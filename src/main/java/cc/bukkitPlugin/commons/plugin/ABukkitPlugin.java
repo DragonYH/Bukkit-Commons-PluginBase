@@ -64,9 +64,13 @@ public abstract class ABukkitPlugin<T extends ABukkitPlugin<T>>extends JavaPlugi
      * 获取插件实例<br>
      * 不建议在static模块中初始化的时候调用此方法
      */
+    @SuppressWarnings("unchecked")
     protected static <T extends ABukkitPlugin<T>> T getInstance(Class<T> pClazz){
         try{
-            return (T)ABukkitPlugin.mInstances.get(pClazz);
+            T tPlugin=(T)ABukkitPlugin.mInstances.get(pClazz);
+            if(tPlugin==null)
+                throw new IllegalStateException("Plugin not instantiated");
+            return tPlugin;
         }catch(ClassCastException exp){
             return null;
         }
@@ -97,10 +101,12 @@ public abstract class ABukkitPlugin<T extends ABukkitPlugin<T>>extends JavaPlugi
     public String C(String pNode,String pPlaceHolder,Object pParam){
         return this.getLangManager().getNode(pNode,new String[]{pPlaceHolder},pParam);
     }
-    
+
     /**
      * 注册Bukkit时间监听器
-     * @param pListener 监听器
+     * 
+     * @param pListener
+     *            监听器
      * @see org.bukkit.plugin.PluginManager
      */
     public void registerEvents(Listener pListener){
