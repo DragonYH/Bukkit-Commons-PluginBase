@@ -36,8 +36,8 @@ public class TCommandExc<T extends ABukkitPlugin<T>> implements CommandExecutor,
     protected String mMainCmdLabel;
     protected T mPlugin;
 
-    protected String mCmdUsagePrefix="§l";
-    protected String mCmdDescPrefix="§2";
+    protected String mCmdUsagePrefix="§b§l";
+    protected String mCmdDescPrefix="    §2";
 
     public TCommandExc(T pPlugin,boolean pRegister){
         this(pPlugin,null,null,pRegister);
@@ -130,7 +130,7 @@ public class TCommandExc<T extends ABukkitPlugin<T>> implements CommandExecutor,
     @Override
     public void setConfig(CommandSender pSender,CommentedYamlConfig pConfig){
         this.mCmdUsagePrefix=pConfig.getString("Prefix.CmdUsagePrefix",this.mCmdUsagePrefix);
-        this.mCmdDescPrefix=pConfig.getString("Prefix.CmdDescPrefix",this.mCmdUsagePrefix);
+        this.mCmdDescPrefix=pConfig.getString("Prefix.CmdDescPrefix",this.mCmdDescPrefix);
     }
 
     @Override
