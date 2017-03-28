@@ -62,9 +62,9 @@ public class TCommandReload<T extends ABukkitPlugin<T>,E extends TCommandExc<T>>
 
     @Override
     public void addDefaultLang(CommentedYamlConfig pConfig){
-        pConfig.addDefault("HelpReloadPlugin","&2重载整个插件");
-        pConfig.addDefault("HelpReloadConfig","&2重载插件主配置");
-        pConfig.addDefault("HelpReloadLang","&2重载插件语言翻译");
+        pConfig.addDefault("HelpReloadPlugin","重载整个插件");
+        pConfig.addDefault("HelpReloadConfig","重载插件主配置");
+        pConfig.addDefault("HelpReloadLang","重载插件语言翻译");
     }
 
     @Override
