@@ -19,8 +19,8 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import cc.bukkitPlugin.commons.Log;
-import cc.commons.util.ClassUtil;
 import cc.commons.util.StringUtil;
+import cc.commons.util.reflect.MethodUtil;
 
 public class BukkitUtil{
 
@@ -28,7 +28,7 @@ public class BukkitUtil{
     private final static boolean mHasBothHand;
 
     static{
-        mHasBothHand=ClassUtil.isMethodExist(PlayerInventory.class,"getItemInMainHand");
+        mHasBothHand=MethodUtil.isMethodExist(PlayerInventory.class,"getItemInMainHand",true);
     }
 
     /**
