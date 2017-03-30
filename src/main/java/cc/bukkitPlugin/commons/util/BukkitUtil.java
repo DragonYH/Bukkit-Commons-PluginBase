@@ -372,14 +372,28 @@ public class BukkitUtil{
     }
 
     /**
-     * 物品不为null且不为空气
+     * 物品是否有效
+     * <p>
+     * 不为null且不为空气且数量大于0
+     * </p>
      * 
      * @param pItem
      *            物品
      * @return 是否是正常的物品
      */
     public static boolean isValidItem(ItemStack pItem){
-        return pItem!=null&&pItem.getType()!=Material.AIR;
+        return pItem!=null&&pItem.getType()!=Material.AIR&&pItem.getAmount()>0;
+    }
+
+    /**
+     * 物品是否无效
+     * 
+     * @param pItem
+     * @return 是否
+     * @see #isValidItem(ItemStack)
+     */
+    public static boolean isInvalidItem(ItemStack pItem){
+        return !BukkitUtil.isValidItem(pItem);
     }
 
     /**
@@ -391,6 +405,18 @@ public class BukkitUtil{
      */
     public static boolean isValidBlock(Block pBlock){
         return pBlock!=null&&pBlock.getType()!=Material.AIR;
+    }
+
+    /**
+     * 方块是否无效
+     * 
+     * @param pBlock
+     *            方块
+     * @return 是否
+     * @see #isValidBlock(Block)
+     */
+    public static boolean isIvalidBlock(Block pBlock){
+        return !BukkitUtil.isValidBlock(pBlock);
     }
 
     /**
