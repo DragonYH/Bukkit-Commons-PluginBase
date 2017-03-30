@@ -7,8 +7,8 @@ import java.util.LinkedHashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.permissions.Permissible;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import cc.bukkitPlugin.commons.Log;
@@ -372,7 +372,7 @@ public abstract class ABukkitPlugin<T extends ABukkitPlugin<T>>extends JavaPlugi
      *            子权限
      * @return 是否
      */
-    public boolean hasCmdPermission(Player pPlayer,String...pCmdTails){
+    public boolean hasCmdPermission(Permissible pPlayer,String...pCmdTails){
         if(pPlayer==null)
             return false;
         StringBuilder tPermitBuilder=new StringBuilder(this.getName());
