@@ -13,6 +13,7 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -38,7 +39,7 @@ public class BukkitUtil{
      *            玩家
      * @return 物品
      */
-    public static ItemStack getItemInMainHand(Player pPlayer){
+    public static ItemStack getItemInMainHand(HumanEntity pPlayer){
         if(BukkitUtil.mHasBothHand){
             return pPlayer.getInventory().getItemInMainHand();
         }else{
@@ -54,7 +55,7 @@ public class BukkitUtil{
      * @param pItem
      *            物品
      */
-    public static void setItemInMainHand(Player pPlayer,ItemStack pItem){
+    public static void setItemInMainHand(HumanEntity pPlayer,ItemStack pItem){
         if(BukkitUtil.mHasBothHand){
             pPlayer.getInventory().setItemInMainHand(pItem);
         }else{
@@ -161,7 +162,7 @@ public class BukkitUtil{
      * @param pCount
      *            物品数量
      */
-    public static void giveItem(Player pPlayer,ItemStack pItem,int pCount){
+    public static void giveItem(HumanEntity pPlayer,ItemStack pItem,int pCount){
         if(!BukkitUtil.isValidItem(pItem)||pCount<=0)
             return;
         pItem=pItem.clone();
@@ -178,7 +179,7 @@ public class BukkitUtil{
      *            物品
      * @return 为能添加到背包的物品
      */
-    public static ItemStack giveItemWithoutDrop(Player pPlayer,ItemStack pItem){
+    public static ItemStack giveItemWithoutDrop(HumanEntity pPlayer,ItemStack pItem){
         if(!BukkitUtil.isValidItem(pItem)||pPlayer==null)
             return null;
 
@@ -239,7 +240,7 @@ public class BukkitUtil{
      * @param pItem
      *            物品
      */
-    public static void giveItem(Player pPlayer,ItemStack pItem){
+    public static void giveItem(HumanEntity pPlayer,ItemStack pItem){
         if(!BukkitUtil.isValidItem(pItem)||pPlayer==null)
             return;
 
