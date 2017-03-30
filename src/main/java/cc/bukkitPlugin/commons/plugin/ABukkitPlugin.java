@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -361,4 +362,26 @@ public abstract class ABukkitPlugin<T extends ABukkitPlugin<T>>extends JavaPlugi
     public void reloadConfig(){
         throw new IllegalAccessError("请使用reloadConfig(CommandSender)方法代替本方法");
     }
+
+    /**
+     * 检查玩家是否有以插件名字开头的权限
+     * 
+     * @param pPlayer
+     *            玩家,允许为null
+     * @param pCmdTails
+     *            子权限
+     * @return 是否
+     */
+    public boolean hasCmdPermission(Player pPlayer,String...pCmdTails){
+        if(pPlayer==null)
+            return false;
+        StringBuilder tPermitBuilder=new StringBuilder(this.getName());
+        if(pCmdTails!=null&&pCmdTails.length>0){
+            for(String sCmdTail : pCmdTails){
+                tPermitBuilder.append('.').append(sCmdTail);
+            }
+        }
+        return pPlayer.hasPermission(tPermitBuilder.toString());
+    }
+
 }
