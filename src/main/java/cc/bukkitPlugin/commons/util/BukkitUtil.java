@@ -511,10 +511,10 @@ public class BukkitUtil{
      *            玩家
      * @param pTask
      *            处理动作
+     * @return 更改的物品数量
      */
-    public static void loopPlayerItem(Player pPlayer,Task<ItemStack> pTask){
-        BukkitUtil.loopArmorItem(pPlayer,pTask);
-        BukkitUtil.loopInvItem(pPlayer.getInventory(),pTask);
+    public static int loopPlayerItem(Player pPlayer,Task<ItemStack> pTask){
+        return BukkitUtil.loopArmorItem(pPlayer,pTask)+BukkitUtil.loopInvItem(pPlayer.getInventory(),pTask);
     }
 
     /**
@@ -524,8 +524,10 @@ public class BukkitUtil{
      *            玩家
      * @param pTask
      *            处理动作
+     * @return 更改的物品数量
      */
-    public static void loopInvItem(Inventory pInv,Task<ItemStack> pTask){
+    public static int loopInvItem(Inventory pInv,Task<ItemStack> pTask){
+        int tModifer=0;
         ItemStack tItem,tNewItem;
         int tInvSize=pInv.getSize();
         for(int i=0;i<tInvSize;i++){
@@ -534,9 +536,11 @@ public class BukkitUtil{
                 tNewItem=pTask.perform(tItem);
                 if(!tItem.isSimilar(tNewItem)){
                     pInv.setItem(i,tNewItem);
+                    tModifer++;
                 }
             }
         }
+        return tModifer;
     }
 
     /**
@@ -546,8 +550,10 @@ public class BukkitUtil{
      *            玩家
      * @param pTask
      *            处理动作
+     * @return 更改的物品数量
      */
-    public static void loopArmorItem(Player pPlayer,Task<ItemStack> pTask){
+    public static int loopArmorItem(Player pPlayer,Task<ItemStack> pTask){
+        int tModifer=0;
         PlayerInventory tInv=pPlayer.getInventory();
         ItemStack tItem,tNewItem;
         tItem=tInv.getHelmet();
@@ -555,6 +561,7 @@ public class BukkitUtil{
             tNewItem=pTask.perform(tItem);
             if(!tItem.isSimilar(tNewItem)){
                 tInv.setHelmet(tNewItem);
+                tModifer++;
             }
         }
         tItem=tInv.getChestplate();
@@ -562,6 +569,7 @@ public class BukkitUtil{
             tNewItem=pTask.perform(tItem);
             if(!tItem.isSimilar(tNewItem)){
                 tInv.setChestplate(tNewItem);
+                tModifer++;
             }
         }
         tItem=tInv.getLeggings();
@@ -569,6 +577,7 @@ public class BukkitUtil{
             tNewItem=pTask.perform(tItem);
             if(!tItem.isSimilar(tNewItem)){
                 tInv.setLeggings(tNewItem);
+                tModifer++;
             }
         }
         tItem=tInv.getBoots();
@@ -576,8 +585,10 @@ public class BukkitUtil{
             tNewItem=pTask.perform(tItem);
             if(!tItem.isSimilar(tNewItem)){
                 tInv.setBoots(tNewItem);
+                tModifer++;
             }
         }
+        return tModifer;
     }
 
 }
