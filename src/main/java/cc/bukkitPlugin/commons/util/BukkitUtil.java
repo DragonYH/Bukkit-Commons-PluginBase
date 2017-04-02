@@ -15,6 +15,7 @@ import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -496,6 +497,87 @@ public class BukkitUtil{
 
         ItemMeta tMeta=pItem.getItemMeta();
         return tMeta.hasLore()?tMeta.getLore():new ArrayList<String>(0);
+    }
+
+    public static interface Task<T>{
+
+        T perform(T pObj);
+    }
+
+    /**
+     * 使用指定动作处理玩家背包内的所有物品
+     * 
+     * @param pPlayer
+     *            玩家
+     * @param pTask
+     *            处理动作
+     */
+    public static void loopPlayerItem(Player pPlayer,Task<ItemStack> pTask){
+        BukkitUtil.loopArmorItem(pPlayer,pTask);
+        BukkitUtil.loopInvItem(pPlayer.getInventory(),pTask);
+    }
+
+    /**
+     * 使用指定动作处理背包内的所有物品
+     * 
+     * @param pPlayer
+     *            玩家
+     * @param pTask
+     *            处理动作
+     */
+    public static void loopInvItem(Inventory pInv,Task<ItemStack> pTask){
+        ItemStack tItem,tNewItem;
+        int tInvSize=pInv.getSize();
+        for(int i=0;i<tInvSize;i++){
+            tItem=pInv.getItem(i);
+            if(BukkitUtil.isValidItem(tItem)){
+                tNewItem=pTask.perform(tItem);
+                if(!tItem.isSimilar(tNewItem)){
+                    pInv.setItem(i,tNewItem);
+                }
+            }
+        }
+    }
+
+    /**
+     * 使用指定动作处理玩家装备背包内的所有物品
+     * 
+     * @param pPlayer
+     *            玩家
+     * @param pTask
+     *            处理动作
+     */
+    public static void loopArmorItem(Player pPlayer,Task<ItemStack> pTask){
+        PlayerInventory tInv=pPlayer.getInventory();
+        ItemStack tItem,tNewItem;
+        tItem=tInv.getHelmet();
+        if(BukkitUtil.isValidItem(tItem)){
+            tNewItem=pTask.perform(tItem);
+            if(!tItem.isSimilar(tNewItem)){
+                tInv.setHelmet(tNewItem);
+            }
+        }
+        tItem=tInv.getChestplate();
+        if(BukkitUtil.isValidItem(tItem)){
+            tNewItem=pTask.perform(tItem);
+            if(!tItem.isSimilar(tNewItem)){
+                tInv.setChestplate(tNewItem);
+            }
+        }
+        tItem=tInv.getLeggings();
+        if(BukkitUtil.isValidItem(tItem)){
+            tNewItem=pTask.perform(tItem);
+            if(!tItem.isSimilar(tNewItem)){
+                tInv.setLeggings(tNewItem);
+            }
+        }
+        tItem=tInv.getBoots();
+        if(BukkitUtil.isValidItem(tItem)){
+            tNewItem=pTask.perform(tItem);
+            if(!tItem.isSimilar(tNewItem)){
+                tInv.setBoots(tNewItem);
+            }
+        }
     }
 
 }
