@@ -514,7 +514,17 @@ public class BukkitUtil{
      * @return 更改的物品数量
      */
     public static int loopPlayerItem(Player pPlayer,Task<ItemStack> pTask){
-        return BukkitUtil.loopArmorItem(pPlayer,pTask)+BukkitUtil.loopInvItem(pPlayer.getInventory(),pTask);
+        int tModifer=BukkitUtil.loopArmorItem(pPlayer,pTask);
+        tModifer+=BukkitUtil.loopInvItem(pPlayer.getInventory(),pTask);
+        ItemStack tItem=pPlayer.getOpenInventory().getCursor();
+        if(BukkitUtil.isValidItem(tItem)){
+            ItemStack tNewItem=pTask.perform(tItem);
+            if(!tItem.isSimilar(tNewItem)){
+                pPlayer.getOpenInventory().setCursor(tNewItem);
+                tModifer++;
+            }
+        }
+        return tModifer;
     }
 
     /**
