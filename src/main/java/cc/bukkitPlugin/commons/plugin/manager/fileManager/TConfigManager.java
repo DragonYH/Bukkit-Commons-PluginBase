@@ -8,6 +8,7 @@ import cc.bukkitPlugin.commons.Log;
 import cc.bukkitPlugin.commons.Log.Level;
 import cc.bukkitPlugin.commons.plugin.ABukkitPlugin;
 import cc.bukkitPlugin.commons.plugin.INeedReload;
+import cc.commons.util.StringUtil;
 
 public class TConfigManager<T extends ABukkitPlugin<T>>extends AFileManager<T> implements INeedReload{
 
@@ -42,7 +43,10 @@ public class TConfigManager<T extends ABukkitPlugin<T>>extends AFileManager<T> i
         // 设置消息等级
         Log.setLogLevel(this.mConfig.getString("LogLevel",Level.DEBUG.name()));
         // 读入消息前缀
-        Log.setMsgPrefix(this.mConfig.getString("MsgPrefix",Log.getMsgPrefix()));
+        String tPrefix=this.mConfig.getString("MsgPrefix");
+        if(StringUtil.isNotEmpty(tPrefix)){
+            Log.setMsgPrefix(Log.color(tPrefix));
+        }
         // 读取信息收集配置
         this.mEnableMetrics=this.mConfig.getBoolean("EnableMetrics",this.mEnableMetrics);
         this.mPlugin.setStatistics(this.mEnableMetrics);
