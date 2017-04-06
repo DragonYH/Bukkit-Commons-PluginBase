@@ -7,7 +7,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -341,6 +340,9 @@ public class BukkitUtil{
 
     /**
      * 快速设置物品信息
+     * <p>
+     * 不翻译颜色
+     * </p>
      * 
      * @param pItem
      *            物品
@@ -355,7 +357,9 @@ public class BukkitUtil{
             return null;
 
         ItemMeta tMeta=pItem.getItemMeta();
-        tMeta.setDisplayName(StringUtil.isBlank(pDisplayName)?"":ChatColor.translateAlternateColorCodes('&',pDisplayName));
+        if(StringUtil.isNotEmpty(pDisplayName)){
+            tMeta.setDisplayName(pDisplayName);
+        }
 
         if(pLores!=null&&pLores.size()!=0){
             ArrayList<String> newLore=new ArrayList<>(pLores.size());
@@ -363,7 +367,7 @@ public class BukkitUtil{
                 if(sSigleLore==null){
                     sSigleLore="";
                 }
-                newLore.add(ChatColor.translateAlternateColorCodes('&',sSigleLore));
+                newLore.add(sSigleLore);
             }
             tMeta.setLore(newLore);
         }
