@@ -2,16 +2,14 @@ package cc.bukkitPlugin.commons;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import cc.commons.util.StringUtil;
 
 public class Log{
 
@@ -41,6 +39,9 @@ public class Log{
 
         /**
          * 设置前缀翻译
+         * <p>
+         * 不翻译颜色字符
+         * </p>
          * 
          * @param pLang
          *            翻译
@@ -78,8 +79,8 @@ public class Log{
     private static Level mLogLevel=Level.DEBUG;
     /** 插件消息前缀 */
     private static String mMsgPrefix="§c[§7TempLog§c]§b";
-    /** 聊天消息格式正则 */
-    private static Pattern COLOR_FORMAT=Pattern.compile("(?!)§([0-9a-fk-or])");
+    /** 所有的颜色字符 */
+    private static String COLOR_CHARS="0123456789AaBbCcDdEeFfKkLlMmNnOoRr";
     /** 插件消息前缀最后的字体颜色和样式 */
     private static String mMsgPrefixLastStye=Log.getLastChatStyle(Log.mMsgPrefix);
 
@@ -102,16 +103,25 @@ public class Log{
         return Log.mLogLevel;
     }
 
-    /** 获取聊天消息前缀 */
+    /** 获取聊天消息前缀(已经翻译颜色) */
     public static String getMsgPrefix(){
         return Log.mMsgPrefix;
     }
 
-    /** 设置聊天消息前缀,不允许设置empty */
+    /**
+     * 设置聊天消息前缀,不允许设置empty
+     * <p>
+     * 不翻译颜色字符
+     * </p>
+     * 
+     * @param pChatPrefix
+     *            消息前缀
+     */
     public static void setMsgPrefix(String pChatPrefix){
         if(pChatPrefix==null||pChatPrefix.isEmpty())
             return;
-        Log.mMsgPrefix=ChatColor.translateAlternateColorCodes('&',pChatPrefix);
+
+        Log.mMsgPrefix=pChatPrefix;
         Log.mMsgPrefixLastStye=Log.getLastChatStyle(Log.mMsgPrefix);
     }
 
@@ -138,7 +148,7 @@ public class Log{
     /**
      * 获取该字符串最后的样式
      * <p>
-     * 不会对字符串进行&字符的替换
+     * 不翻译颜色字符
      * </p>
      * 
      * @param pText
@@ -146,24 +156,31 @@ public class Log{
      * @return 颜色加格式的字符串
      */
     public static String getLastChatStyle(String pText){
+        if(StringUtil.isEmpty(pText))
+            return "";
         ChatColor tLastColor=null;
         HashSet<ChatColor> tFontStyle=new HashSet<>();
-        Matcher tMatcher=COLOR_FORMAT.matcher(pText);
-        while(tMatcher.find()){
-            char tc=tMatcher.group(1).charAt(0);
-            ChatColor tColor=ChatColor.getByChar(tc);
-            if(tLastColor!=null){
-                if(tColor.isColor()){
-                    tLastColor=tColor;
-                    tFontStyle.clear();
-                }else if(tColor.isFormat()){
-                    tFontStyle.add(tLastColor);
-                }else{
-                    tLastColor=null;
-                    tFontStyle.clear();
+        char[] tContent=pText.toCharArray();
+        for(int i=0;i<tContent.length-1;i++){
+            if(tContent[i]==ChatColor.COLOR_CHAR){
+                ChatColor tColor=ChatColor.getByChar(tContent[i+1]);
+                if(tLastColor!=null){
+                    if(tColor.isColor()){
+                        tLastColor=tColor;
+                        tFontStyle.clear();
+                    }else if(tColor.isFormat()){
+                        tFontStyle.add(tLastColor);
+                    }else{
+                        tLastColor=null;
+                        tFontStyle.clear();
+                    }
+                    i++;
+                }else if(tContent[i+1]=='&'){
+                    i++;
                 }
             }
         }
+
         StringBuilder tSB=new StringBuilder();
         if(tLastColor!=null){
             tSB.append(tLastColor.toString());
@@ -177,7 +194,7 @@ public class Log{
     /**
      * 发送消息给指定玩家
      * <p>
-     * 此消息各段消息间的格式不互相影响,全部默认继承自插件前缀样式
+     * 此消息各段消息间的格式不互相影响,全部默认继承自插件前缀样式 不翻译消息颜色字符
      * </p>
      * 
      * @param pSender
@@ -204,6 +221,9 @@ public class Log{
 
     /**
      * 发送普通消息到Console消息,颜色依据插件前缀设置
+     * <p>
+     * 不翻译消息颜色字符
+     * </p>
      * 
      * @param pMsg
      *            消息,不需要加前缀
@@ -215,7 +235,8 @@ public class Log{
     /**
      * 发送普通消息给指定玩家,颜色依据插件前缀设置
      * <p>
-     * 如果玩家不是控制台,将同时发送消息到控制台
+     * 如果玩家不是控制台,将同时发送消息到控制台 <br>
+     * 不翻译消息颜色字符
      * </p>
      * 
      * @param pMsg
@@ -230,6 +251,9 @@ public class Log{
 
     /**
      * 发送调试到Console消息,蓝色
+     * <p>
+     * 不翻译消息颜色字符
+     * </p>
      * 
      * @param pMsg
      *            消息,不需要加前缀
@@ -241,7 +265,8 @@ public class Log{
     /**
      * 发送调试到指定玩家,蓝色
      * <p>
-     * 如果玩家不是控制台,将同时发送消息到控制台
+     * 如果玩家不是控制台,将同时发送消息到控制台 <br>
+     * 不翻译消息颜色字符
      * </p>
      * 
      * @param pMsg
@@ -256,6 +281,9 @@ public class Log{
 
     /**
      * 发送警告到Console消息,黄色
+     * <p>
+     * 不翻译消息颜色字符
+     * </p>
      * 
      * @param pMsg
      *            消息,不需要加前缀
@@ -267,7 +295,8 @@ public class Log{
     /**
      * 发送警告消息到指定玩家,黄色
      * <p>
-     * 如果玩家不是控制台,将同时发送消息到控制台
+     * 如果玩家不是控制台,将同时发送消息到控制台<br>
+     * 不翻译消息颜色字符
      * </p>
      * 
      * @param pMsg
@@ -282,6 +311,9 @@ public class Log{
 
     /**
      * 发送警告到Console消息,黄色
+     * <p>
+     * 不翻译消息颜色字符
+     * </p>
      * 
      * @param pMsg
      *            消息,不需要加前缀
@@ -293,7 +325,8 @@ public class Log{
     /**
      * 发送警告消息到指定玩家,黄色
      * <p>
-     * 如果玩家不是控制台,将同时发送消息到控制台
+     * 如果玩家不是控制台,将同时发送消息到控制台<br>
+     * 不翻译消息颜色字符
      * </p>
      * 
      * @param pMsg
@@ -309,7 +342,8 @@ public class Log{
     /**
      * 发送错误的Console消息,暗红色消息
      * <p>
-     * 如果玩家不是控制台,将同时发送消息到控制台
+     * 如果玩家不是控制台,将同时发送消息到控制台<br>
+     * 不翻译消息颜色字符
      * </p>
      * 
      * @param pMsg
@@ -322,7 +356,8 @@ public class Log{
     /**
      * 发送错误的消息给指定玩家,暗红色消息
      * <p>
-     * 如果玩家不是控制台,将同时发送消息到控制台
+     * 如果玩家不是控制台,将同时发送消息到控制台<br>
+     * 不翻译消息颜色字符
      * </p>
      * 
      * @param pMsg
@@ -338,7 +373,8 @@ public class Log{
     /**
      * 输出错误信息到Console
      * <p>
-     * 发送错误堆栈的起始错误信息 如果配置文件启用调试模式,会同时发送错误堆栈
+     * 发送错误堆栈的起始错误信息 如果配置文件启用调试模式,会同时发送错误堆栈<br>
+     * 不翻译消息颜色字符
      * </p>
      * 
      * @param pExp
@@ -357,8 +393,9 @@ public class Log{
     /**
      * 输出错误信息到Console
      * <p>
-     * 如果配置文件启用调试模式,会同时发送错误堆栈
-     * 如果未启用调试模式,将会自动为pMsg加上异常的消息,格式<code>pMsg+": "+pExp.getMessage()</code>
+     * 如果配置文件启用调试模式,会同时发送错误堆栈<br>
+     * 如果未启用调试模式,将会自动为pMsg加上异常的消息,格式<code>pMsg+": "+pExp.getMessage()</code><br>
+     * 不翻译消息颜色字符
      * </p>
      * 
      * @param pMsg
@@ -376,7 +413,8 @@ public class Log{
      * 如果指定玩家不是控制台,将同时输出消息到控制台<br>
      * 堆栈信息不会发送给玩家<br>
      * 如果配置文件启用调试模式,会同时发送错误堆栈<br>
-     * 如果未启用调试模式,消息pMsg后会添加异常的的类型和消息
+     * 如果未启用调试模式,消息pMsg后会添加异常的的类型和消息<br>
+     * 不翻译消息颜色字符
      * </p>
      * 
      * @param pMsg
@@ -393,7 +431,8 @@ public class Log{
      * <p>
      * 如果指定玩家不是控制台,将同时输出消息到控制台<br>
      * 堆栈信息不会发送给玩家<br>
-     * 如果配置文件启用调试模式,会同时发送错误堆栈
+     * 如果配置文件启用调试模式,会同时发送错误堆栈<br>
+     * 不翻译消息颜色字符
      * </p>
      * 
      * @param pMsg
@@ -425,6 +464,9 @@ public class Log{
 
     /**
      * 发送消息到指定玩家
+     * <p>
+     * 不翻译消息颜色字符
+     * </p>
      * 
      * @param pSender
      *            发送给谁
@@ -439,7 +481,7 @@ public class Log{
     /**
      * 向用户发送消息
      * <p>
-     * 此处判断消息是否发送给用于
+     * 不翻译消息颜色字符
      * </p>
      * 
      * @param pSender
@@ -466,6 +508,9 @@ public class Log{
 
     /**
      * 向用户发送消息
+     * <p>
+     * 不翻译消息颜色字符
+     * </p>
      * 
      * @param pSender
      *            目标
@@ -482,15 +527,45 @@ public class Log{
             pSender=Bukkit.getConsoleSender();
         if(pPrefix==null||pPrefix.isEmpty()){
             pPrefix=Log.getMsgPrefixStyle();
-        }else{
-            pPrefix=ChatColor.translateAlternateColorCodes('&',pPrefix);
         }
-        pMsg=ChatColor.translateAlternateColorCodes('&',pMsg);
-        List<String> tMsgs=Arrays.asList(pMsg.split("\n+"));
-        for(String sMsg : tMsgs){
+
+        for(String sMsg : pMsg.split("\n+")){
             pSender.sendMessage(pPrefix+sMsg);
         }
         return true;
+    }
+
+    /**
+     * 替换字符中的&+颜色字符为§+颜色字符,&&只会替换成&
+     * 
+     * @param pText
+     *            消息
+     * @return 替换后的消息
+     */
+    public static String color(String pText){
+        if(StringUtil.isEmpty(pText))
+            return pText;
+        int tPoint=0,i=0;
+        char[] b=pText.toCharArray();
+        for(;i<b.length-1;i++){
+            if(b[i]=='&'){
+                if(COLOR_CHARS.indexOf(b[i+1])>-1){
+                    b[tPoint++]=ChatColor.COLOR_CHAR;
+                    b[tPoint++]=Character.toLowerCase(b[i+1]);
+                    i++;
+                    continue;
+                }else if(b[i+1]=='&'){
+                    b[tPoint++]='&';
+                    i++;
+                    continue;
+                }
+            }
+            b[tPoint++]=b[i];
+        }
+        if(i<b.length){
+            b[tPoint++]=b[i];
+        }
+        return new String(b,0,tPoint);
     }
 
 }
