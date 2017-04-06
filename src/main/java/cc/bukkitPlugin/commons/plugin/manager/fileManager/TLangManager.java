@@ -5,7 +5,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeSet;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import cc.bukkitPlugin.commons.Log;
@@ -17,8 +16,6 @@ public class TLangManager<T extends ABukkitPlugin<T>>extends AFileManager<T> imp
 
     protected final static HashMap<String,String> mDefaultLang=new HashMap<>();
     protected static TLangManager<?> mInstance;
-
-    private final LinkedHashMap<Class<? extends ILangModel>,ILangModel> mLangModel=new LinkedHashMap<>();
 
     static{
         TLangManager.mDefaultLang.put("MsgAtPosition","在位置");
@@ -52,31 +49,32 @@ public class TLangManager<T extends ABukkitPlugin<T>>extends AFileManager<T> imp
     }
 
     /**
-     * 获取指定消息节点的翻译,大小写敏感
+     * 获取指定消息节点的翻译
      * <p>
      * 获取优先级: 实例中的语言->自定义默认语言(非空时)->默认的语言->Node本身<br>
      * 注意,本函数中不会报节点丢失错误<br>
-     * 请只使用该函数获取默认的语言
+     * 请只使用该函数获取默认的语言<br>
+     * 大小写敏感,翻译语言颜色字符,不翻译默认语言颜色字符<br>
      * </p>
      * 
      * @param pNode
      *            消息节点名
      * @param pDefLang
-     *            默认的语言,如果为null时,默认值将返回pNode
+     *            默认的语言
      * @return 翻译后的消息
      */
     public static String staticGetNode(String pNode,String pDefLang){
         if(TLangManager.mInstance!=null){
             String tLang=TLangManager.mInstance.mConfig.getString(pNode);
             if(StringUtil.isNotEmpty(tLang)){
-                return ChatColor.translateAlternateColorCodes('&',tLang);
+                return Log.color(tLang);
             }
         }
         String tLang=TLangManager.mDefaultLang.get(pNode);
         if(tLang!=null){
-            return ChatColor.translateAlternateColorCodes('&',tLang);
+            return Log.color(tLang);
         }else{
-            return StringUtil.isNotEmpty(pDefLang)?pDefLang:pNode;
+            return pDefLang;
         }
     }
 
@@ -84,6 +82,19 @@ public class TLangManager<T extends ABukkitPlugin<T>>extends AFileManager<T> imp
         return TLangManager.staticGetNode("MsgSwitchDebugOnCfgToSeeErrorStack","§c配置文件设置LogLevel为DEBUG或以上等级来看到更多错误消息");
     }
 
+    /** 所有注册的语言模块 */
+    private final LinkedHashMap<Class<? extends ILangModel>,ILangModel> mLangModel=new LinkedHashMap<>();
+
+    /**
+     * 构建一个语言管理器实例
+     * 
+     * @param pPlugin
+     *            主插件
+     * @param pFileName
+     *            语言文件名(包含后缀)
+     * @param pVersion
+     *            文件版本
+     */
     public TLangManager(T pPlugin,String pFileName,String pVersion){
         super(pPlugin,pFileName,pVersion);
         TLangManager.mInstance=this;
@@ -105,6 +116,9 @@ public class TLangManager<T extends ABukkitPlugin<T>>extends AFileManager<T> imp
         return true;
     }
 
+    /**
+     * 重新写入所有模块的默认翻译
+     */
     protected void reloadModles(){
         for(ILangModel sModel : this.mLangModel.values()){
             sModel.setLang(this.mConfig);
@@ -113,23 +127,39 @@ public class TLangManager<T extends ABukkitPlugin<T>>extends AFileManager<T> imp
 
     /**
      * 获取指定消息节点的翻译,大小写敏感
+     * <p>
+     * 不翻译颜色字符
+     * </p>
      * 
      * @param pNode
      *            消息节点名
-     * @return 翻译后的消息
+     * @return 消息
      */
     public String getNode(String pNode){
-        String tMsg=this.mConfig.getString(pNode);
-        if(tMsg!=null){
-            return ChatColor.translateAlternateColorCodes('&',tMsg);
-        }else{
-            Log.warn(TLangManager.staticGetNode("MsgMissingLangNode",null).replace("%node%",pNode));
-            return pNode;
-        }
+        return this.getNode(pNode,pNode);
+    }
+
+    /**
+     * 获取指定消息节点的翻译,大小写敏感
+     * <p>
+     * 不翻译颜色字符
+     * </p>
+     * 
+     * @param pNode
+     *            消息节点名
+     * @param pDefValue
+     *            消息未找到时的默认消息
+     * @return 翻译后的消息
+     */
+    public String getNode(String pNode,String pDefValue){
+        return this.getNode(pNode,pDefValue,new String[0],new Object[0]);
     }
 
     /**
      * 获取指定消息节点的翻译,大小写敏感,同时翻译占位符
+     * <p>
+     * 不翻译颜色字符
+     * </p>
      * 
      * @param pNode
      *            节点名
@@ -140,36 +170,44 @@ public class TLangManager<T extends ABukkitPlugin<T>>extends AFileManager<T> imp
      * @return 翻译后的消息
      */
     public String getNode(String pNode,String[] pPlaceHolders,Object...pParams){
-        String tLang=this.getNode(pNode);
-        if(tLang.equals(pNode))
-            return tLang;
-
-        if(pPlaceHolders.length!=pParams.length)
-            throw new IllegalArgumentException("占位符数量必须与翻译替代语言数量一致");
-
-        for(int i=0;i<pPlaceHolders.length;i++){
-            tLang=tLang.replace(pPlaceHolders[i],String.valueOf(pParams[i]));
-        }
-        return tLang;
+        return this.getNode(pNode,pNode,pPlaceHolders,pParams);
     }
 
     /**
-     * 获取指定消息节点的翻译,大小写敏感
+     * 获取指定消息节点的翻译
+     * <p>
+     * 大小写敏感,翻译语言颜色字符,不翻译默认语言颜色字符<br>
+     * 同时翻译占位符<br>
+     * </p>
      * 
      * @param pNode
-     *            消息节点名
+     *            节点名
      * @param pDefValue
      *            消息未找到时的默认消息
+     * @param pPlaceHolders
+     *            占位符列表,允许null
+     * @param pParams
+     *            翻译替代语言
      * @return 翻译后的消息
      */
-    public String getNode(String pNode,String pDefValue){
-        String tMsg=this.mConfig.getString(pNode);
-        if(tMsg!=null){
-            return ChatColor.translateAlternateColorCodes('&',tMsg);
-        }else{
+    public String getNode(String pNode,String pDefValue,String[] pPlaceHolders,Object...pParams){
+        String tRawLang=this.mConfig.getString(pNode,null);
+        if(tRawLang==null){
             Log.warn(TLangManager.staticGetNode("MsgMissingLangNode",null).replace("%node%",pNode));
-            return StringUtil.isEmpty(pDefValue)?pDefValue:ChatColor.translateAlternateColorCodes('&',pDefValue);
+            tRawLang=pDefValue;
+        }else{
+            tRawLang=Log.color(tRawLang);
         }
+
+        if((pPlaceHolders==null&&pParams.length!=0)||pPlaceHolders.length!=pParams.length)
+            throw new IllegalArgumentException("占位符数量必须与翻译替代语言数量一致");
+
+        if(pPlaceHolders!=null&&pPlaceHolders.length>0){
+            for(int i=0;i<pPlaceHolders.length;i++){
+                tRawLang=tRawLang.replace(pPlaceHolders[i],String.valueOf(pParams[i]));
+            }
+        }
+        return tRawLang;
     }
 
     /**
@@ -201,6 +239,9 @@ public class TLangManager<T extends ABukkitPlugin<T>>extends AFileManager<T> imp
         return this.mLangModel.remove(pClazz);
     }
 
+    /**
+     * 添加默认语言
+     */
     @Override
     protected void addDefaults(){
         // 写入默认语言
@@ -213,6 +254,12 @@ public class TLangManager<T extends ABukkitPlugin<T>>extends AFileManager<T> imp
         }
     }
 
+    /**
+     * 重新写入模块的默认翻译
+     * 
+     * @param pClazz
+     *            语言模块
+     */
     public void reloadModel(Class<? extends ILangModel> pClazz){
         ILangModel tModel=this.mLangModel.get(pClazz);
         if(tModel==null)
@@ -222,6 +269,9 @@ public class TLangManager<T extends ABukkitPlugin<T>>extends AFileManager<T> imp
         this.saveConfig(null);
     }
 
+    /**
+     * 排序语言文件
+     */
     protected void sortLang(){
         TreeSet<String> keyConvertTree=new TreeSet<>();
         keyConvertTree.addAll(this.mConfig.getKeys(true));
