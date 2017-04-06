@@ -509,6 +509,34 @@ public class BukkitUtil{
     }
 
     /**
+     * 是否应该将物品设置回背包位置
+     * <p>
+     * 不需要设置回背包的情况:<br>
+     * 1.物品数据一致<br>
+     * 2.物品的包装NMS物品实例为同一个<br>
+     * 3.两个物品在{@link #isInvalidItem(ItemStack)中的判定都为false}
+     * </p>
+     * 
+     * @param pOrigin
+     *            原物品
+     * @param pNewItem
+     *            新物品
+     * @return 是否
+     */
+    public static boolean shouldSetBack(ItemStack pOrigin,ItemStack pNewItem){
+        boolean tInvalid1=BukkitUtil.isInvalidItem(pOrigin);
+        if(tInvalid1==BukkitUtil.isInvalidItem(pNewItem)){
+            if(tInvalid1){ // 都为非法物品
+                return false;
+            }
+            return !(pOrigin.getAmount()==pNewItem.getAmount()&&pOrigin.isSimilar(pNewItem));
+        }else{ // 一个是非法物品,一个不是
+            return true;
+        }
+
+    }
+
+    /**
      * 使用指定动作处理玩家背包内的所有物品
      * 
      * @param pPlayer
@@ -523,7 +551,7 @@ public class BukkitUtil{
         ItemStack tItem=pPlayer.getOpenInventory().getCursor();
         if(BukkitUtil.isValidItem(tItem)){
             ItemStack tNewItem=pTask.perform(tItem);
-            if(!tItem.isSimilar(tNewItem)){
+            if(BukkitUtil.shouldSetBack(tItem,tNewItem)){
                 pPlayer.getOpenInventory().setCursor(tNewItem);
                 tModifer++;
             }
@@ -548,7 +576,7 @@ public class BukkitUtil{
             tItem=pInv.getItem(i);
             if(BukkitUtil.isValidItem(tItem)){
                 tNewItem=pTask.perform(tItem);
-                if(!tItem.isSimilar(tNewItem)){
+                if(BukkitUtil.shouldSetBack(tItem,tNewItem)){
                     pInv.setItem(i,tNewItem);
                     tModifer++;
                 }
@@ -573,7 +601,7 @@ public class BukkitUtil{
         tItem=tInv.getHelmet();
         if(BukkitUtil.isValidItem(tItem)){
             tNewItem=pTask.perform(tItem);
-            if(!tItem.isSimilar(tNewItem)){
+            if(BukkitUtil.shouldSetBack(tItem,tNewItem)){
                 tInv.setHelmet(tNewItem);
                 tModifer++;
             }
@@ -581,7 +609,7 @@ public class BukkitUtil{
         tItem=tInv.getChestplate();
         if(BukkitUtil.isValidItem(tItem)){
             tNewItem=pTask.perform(tItem);
-            if(!tItem.isSimilar(tNewItem)){
+            if(BukkitUtil.shouldSetBack(tItem,tNewItem)){
                 tInv.setChestplate(tNewItem);
                 tModifer++;
             }
@@ -589,7 +617,7 @@ public class BukkitUtil{
         tItem=tInv.getLeggings();
         if(BukkitUtil.isValidItem(tItem)){
             tNewItem=pTask.perform(tItem);
-            if(!tItem.isSimilar(tNewItem)){
+            if(BukkitUtil.shouldSetBack(tItem,tNewItem)){
                 tInv.setLeggings(tNewItem);
                 tModifer++;
             }
@@ -597,7 +625,7 @@ public class BukkitUtil{
         tItem=tInv.getBoots();
         if(BukkitUtil.isValidItem(tItem)){
             tNewItem=pTask.perform(tItem);
-            if(!tItem.isSimilar(tNewItem)){
+            if(BukkitUtil.shouldSetBack(tItem,tNewItem)){
                 tInv.setBoots(tNewItem);
                 tModifer++;
             }
