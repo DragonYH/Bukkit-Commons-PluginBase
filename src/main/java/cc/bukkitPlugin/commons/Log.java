@@ -77,6 +77,8 @@ public class Log{
 
     /** 消息输出等级 */
     private static Level mLogLevel=Level.DEBUG;
+    /***/
+    private static boolean mLogStackTrace=true;
     /** 插件消息前缀 */
     private static String mMsgPrefix="§c[§7TempLog§c]§b";
     /** 所有的颜色字符 */
@@ -99,6 +101,23 @@ public class Log{
         }
     }
 
+    /**
+     * 设置日志是否记录堆栈
+     */
+    public static void logStackTrace(boolean pEnable){
+        Log.mLogStackTrace=pEnable;
+    }
+
+    /**
+     * 查询日志是否记录堆栈
+     */
+    public static boolean logStackTrace(){
+        return Log.mLogStackTrace;
+    }
+
+    /**
+     * 获取日志等级
+     */
     public static Level getLogLevel(){
         return Log.mLogLevel;
     }
@@ -384,7 +403,7 @@ public class Log{
         while(pExp.getCause()!=null)
             pExp=pExp.getCause();
         String tMsg=pExp.getClass().getName()+": "+pExp.getMessage();
-        if(Log.isDebug()){
+        if(Log.logStackTrace()){
             tMsg=pExp.getStackTrace()[0].toString().trim()+','+tMsg;
         }
         Log.severe(Bukkit.getConsoleSender(),tMsg,pExp,false);
@@ -443,23 +462,23 @@ public class Log{
      *            是否在未启用调试模式时,在消息pMsg后添加异常的的类型和消息
      */
     public static void severe(CommandSender pSender,String pMsg,Throwable pExp,boolean pFixSuffix){
-        if(Log.isDebug()){
+        if(Log.logStackTrace()){
             Log.send(pSender,Level.SEVERE,pMsg);
+            StringWriter tSW=new StringWriter();
+            PrintWriter tPW=new PrintWriter(tSW,true);
+            pExp.printStackTrace(tPW);
+            String[] lines=tSW.getBuffer().toString().split("(\r?\n)+");
+            // 堆栈不发送给Player
+            pSender=Bukkit.getConsoleSender();
+            for(String sLine : lines){
+                Log.send(pSender,Level.SEVERE,sLine);
+            }
         }else{
             if(pFixSuffix){
                 pMsg+=','+pExp.getClass().getName()+": "+pMsg;
             }
             Log.send(pSender,Level.SEVERE,pMsg);
-            return;
         }
-        StringWriter tSW=new StringWriter();
-        PrintWriter tPW=new PrintWriter(tSW,true);
-        pExp.printStackTrace(tPW);
-        String[] lines=tSW.getBuffer().toString().split("(\r?\n)+");
-        // 堆栈不发送给Player
-        pSender=Bukkit.getConsoleSender();
-        for(String sLine : lines)
-            Log.send(pSender,Level.SEVERE,sLine);
     }
 
     /**

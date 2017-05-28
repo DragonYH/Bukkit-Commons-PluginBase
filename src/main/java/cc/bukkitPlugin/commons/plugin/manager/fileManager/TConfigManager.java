@@ -42,6 +42,7 @@ public class TConfigManager<T extends ABukkitPlugin<T>>extends AFileManager<T> i
         }
         // 设置消息等级
         Log.setLogLevel(this.mConfig.getString("LogLevel",Level.DEBUG.name()));
+        Log.logStackTrace(this.mConfig.getBoolean("LogStackTrace",true));
         // 读入消息前缀
         String tPrefix=this.mConfig.getString("MsgPrefix");
         if(StringUtil.isNotEmpty(tPrefix)){
@@ -69,7 +70,8 @@ public class TConfigManager<T extends ABukkitPlugin<T>>extends AFileManager<T> i
     @Override
     public void addDefaults(){
         super.addDefaults();
-        this.mConfig.addDefault("LogLevel",Log.Level.DEBUG.name(),"设置消息输出等级","INFO<WARN<SEVERE<DEBUG<DEVELOP","WARN:输出警告,SEVERE:输出错误,DEBUG:输出调试,错误堆栈,DEVELOP:输出开发信息");
+        this.mConfig.addDefault("LogLevel",Log.Level.SEVERE.name(),"设置消息输出等级","INFO<WARN<SEVERE<DEBUG<DEVELOP");
+        this.mConfig.addDefault("LogStackTrace",true,"是否记录错误堆栈");
         this.mConfig.addDefault("MsgPrefix",Log.getMsgPrefix(),"插件大部分消息前缀");
         this.mConfig.addDefault("EnableMetrics",true,"是否开启服务器信息收集,只是用于插件使用情况统计","收集的信息: 使用版本 服务器ID 服务器IP 服务器端口 服务器版本 Java版本 系统版本");
         this.mConfig.addDefault("IsThreadSafe",true,"是否启用线程安全检查","当前的安全检查有[命令是否异步运行]");
