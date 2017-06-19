@@ -93,7 +93,7 @@
         <dependency>
             <groupId>cc.commons</groupId>
             <artifactId>commons-commentedyaml</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>1.1.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>
