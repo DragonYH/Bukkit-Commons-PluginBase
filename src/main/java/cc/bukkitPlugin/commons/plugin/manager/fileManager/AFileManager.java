@@ -82,8 +82,7 @@ public abstract class AFileManager<T extends ABukkitPlugin<T>>extends AManager<T
             }catch(Throwable exp){
                 Log.severe(pSender,null,exp);
             }finally{
-                IOUtil.closeStream(tIPStream);
-                IOUtil.closeStream(tOPStream);
+                IOUtil.closeStream(tIPStream,tOPStream);
             }
         }
         if(!this.mConfig.loadFromFile(this.mFile)){

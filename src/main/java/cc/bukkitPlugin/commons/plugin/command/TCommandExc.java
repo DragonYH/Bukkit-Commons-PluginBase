@@ -174,7 +174,7 @@ public class TCommandExc<T extends ABukkitPlugin<T>> implements CommandExecutor,
         HashSet<String> tCmdLabels=pCmd.getCommandLabelAlias();
         if(tCmdLabels==null)
             tCmdLabels=new HashSet<>(1);
-        tCmdLabels.add(pCmd.getCommandLabel());
+        tCmdLabels.add(pCmd.getCommandLabel().toLowerCase());
         for(String sCmdLabel : tCmdLabels){
             sCmdLabel=sCmdLabel.toLowerCase();
             TACommandBase<T,? extends TCommandExc<T>> oldCmd=this.mCommands.put(sCmdLabel,pCmd);

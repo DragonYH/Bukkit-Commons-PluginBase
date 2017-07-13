@@ -26,6 +26,8 @@ public abstract class TACommandBase<T extends ABukkitPlugin<T>,E extends TComman
     protected String mCmdLabel;
     /** 命令最大参数长度 */
     protected int mMaxArgLength=0;
+    /** 命令名字映射,默认包含自带命令名字的小写 */
+    protected final HashSet<String> mCmdAlias=new HashSet<>();
     /** 一级子命令集合,有序,建议小写,空表示不存在一级子命令 */
     protected final TreeSet<String> mSubCmd=new TreeSet<>();
     /**
@@ -102,6 +104,7 @@ public abstract class TACommandBase<T extends ABukkitPlugin<T>,E extends TComman
         this.mCmdLabel=StringUtil.lowerFirst(this.mCmdLabel);
         this.mMaxArgLength=pMaxArgLength;
         this.mPermissionHead=new StringBuilder(pExector.getMainLabel()).append('.').append("cmd").append('.').append(this.mCmdLabel.toLowerCase()).toString();
+        this.mCmdAlias.add(this.mCmdLabel.toLowerCase());
     }
 
     /**
@@ -239,7 +242,7 @@ public abstract class TACommandBase<T extends ABukkitPlugin<T>,E extends TComman
      * @return 非null
      */
     public HashSet<String> getCommandLabelAlias(){
-        return new HashSet<>(1);
+        return this.mCmdAlias;
     }
 
     /**
