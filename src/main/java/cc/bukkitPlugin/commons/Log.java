@@ -18,7 +18,7 @@ public class Log{
         WARN("WordWarn","警告",ChatColor.YELLOW),
         SEVERE("WordError","错误",ChatColor.RED),
         DEBUG("WordDebug","调试",ChatColor.BLUE),
-        DEVELOP("","",ChatColor.BLUE);
+        DEVELOP("WordDebug","调试",ChatColor.BLUE);
 
         /** 名字key,如果为null,使用{@link Level#name()} */
         public final String mNameKey;
