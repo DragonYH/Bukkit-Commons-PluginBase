@@ -88,12 +88,12 @@
         <dependency>
             <groupId>cc.commons</groupId>
             <artifactId>commons-util</artifactId>
-            <version>1.0.2-SNAPSHOT</version>
+            <version>[1.0.1,)</version>
         </dependency>
         <dependency>
             <groupId>cc.commons</groupId>
             <artifactId>commons-commentedyaml</artifactId>
-            <version>1.1.1-SNAPSHOT</version>
+            <version>[1.0.0,)</version>
         </dependency>
     </dependencies>
 </project>
