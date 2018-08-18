@@ -1,10 +1,14 @@
 package cc.bukkitPlugin.commons.util;
 
+import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -21,16 +25,30 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import cc.bukkitPlugin.commons.Log;
 import cc.commons.util.StringUtil;
+import cc.commons.util.reflect.LookupUtil;
 import cc.commons.util.reflect.MethodUtil;
+import cc.commons.util.tools.CacheGettor;
 
 public class BukkitUtil{
 
     /** 是否拥有副手 */
-    private final static boolean mHasBothHand;
+    private final static boolean mHasBothHand=MethodUtil.isMethodExist(PlayerInventory.class,"getItemInMainHand",true);
+    private final static MethodHandle MH_Bukkit_getOnlinePlayers=LookupUtil.unreflect(MethodUtil.getMethodIgnoreParam(Bukkit.class,
+            "getOnlinePlayers",true).get(0));
 
-    static{
-        mHasBothHand=MethodUtil.isMethodExist(PlayerInventory.class,"getItemInMainHand",true);
-    }
+    public static String mTestMCVersion="1.7.10";
+    /** Minecraft版本 */
+    private static CacheGettor<String> mMCVersion=CacheGettor.create(()->{
+        if(Bukkit.getServer()!=null){
+            String tVersionStr=Bukkit.getVersion();
+            //(MC: " + this.console.getVersion() + ")"
+            Matcher matcher=Pattern.compile("^.*?\\(MC: (.*?)\\)$").matcher(tVersionStr);
+            if(matcher.find())
+                return matcher.group(1);
+            else Log.warn("未能从字符串 \""+tVersionStr+"\" 中获取Minecraft版本,部分功能可能存在兼容性问题");
+        }
+        return mTestMCVersion;
+    });
 
     /**
      * 获取主手上的物品
@@ -68,23 +86,17 @@ public class BukkitUtil{
      * 
      * @return 在线的玩家
      */
-    public static Player[] getOnlinePlayers(){
-        Method tMethod;
+    public static Collection<Player> getOnlinePlayers(){
         try{
-            tMethod=Bukkit.class.getDeclaredMethod("getOnlinePlayers");
-            Object tObject=tMethod.invoke(null);
-            Player[] tPlayers;
+            Object tObject=MH_Bukkit_getOnlinePlayers.invoke();
             if(tObject instanceof Player[])
-                tPlayers=(Player[])tObject;
+                return Arrays.asList((Player[])tObject);
             else{
-                Collection<Player> tcPlayers=(Collection<Player>)tObject;
-                tPlayers=new Player[tcPlayers.size()];
-                tcPlayers.toArray(tPlayers);
+                return (Collection<Player>)tObject;
             }
-            return tPlayers;
         }catch(Throwable exp){
             Log.severe("获取在线玩家列表时发生了错误",exp);
-            return new Player[0];
+            return Collections.EMPTY_LIST;
         }
     }
 
@@ -631,6 +643,13 @@ public class BukkitUtil{
             }
         }
         return tModifer;
+    }
+
+    /**
+     * 获取MC版本
+     */
+    public static String getMinecraftVersion(){
+        return BukkitUtil.mMCVersion.get();
     }
 
 }
