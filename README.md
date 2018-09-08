@@ -6,5 +6,5 @@
 
 
 * 项目依赖
-  +  [Java-Commons-Util](https://coding.net/u/q17866380/p/Java-Commons-Util/git)
-  +  [Java-Commons-CommentedYaml](https://coding.net/u/q17866380/p/Java-Commons-CommentedYaml/git)
+  +  [Java-Commons-Util](https://gitee.com/Imcc/Java-Commons-Util/git)
+  +  [Java-Commons-CommentedYaml](https://gitee.com/Imcc/Java-Commons-CommentedYaml/git)
