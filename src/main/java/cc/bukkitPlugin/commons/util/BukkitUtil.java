@@ -256,7 +256,7 @@ public class BukkitUtil{
         if(!BukkitUtil.isValidItem(pItem)||pPlayer==null)
             return;
 
-        pItem=pItem.clone();
+        pItem=BukkitUtil.convertToCraftItem(pItem.clone());
         if(pPlayer.getInventory().firstEmpty()==-1){ // 背包满了
             if(pItem.getMaxStackSize()==1){
                 BukkitUtil.dropItem(pPlayer.getLocation(),pItem);
@@ -316,6 +316,7 @@ public class BukkitUtil{
         if(!BukkitUtil.isValidItem(pItem)||pLoc==null||pLoc.getWorld()==null)
             return;
 
+        pItem=BukkitUtil.convertToCraftItem(pItem);
         int tMaxstackSize=pItem.getMaxStackSize();
         if(tMaxstackSize<=0)
             tMaxstackSize=1;
@@ -650,6 +651,20 @@ public class BukkitUtil{
      */
     public static String getMinecraftVersion(){
         return BukkitUtil.mMCVersion.get();
+    }
+
+    private static Inventory mInv=Bukkit.createInventory(null,9);
+
+    /**
+     * 转换ItemStack为CraftItemStack
+     * 
+     * @param pItem
+     * @return
+     */
+    public static ItemStack convertToCraftItem(ItemStack pItem){
+        BukkitUtil.mInv.setItem(0,pItem);
+        ItemStack tItem=BukkitUtil.mInv.getItem(0);
+        return BukkitUtil.isValidItem(tItem)?tItem:pItem;
     }
 
 }
