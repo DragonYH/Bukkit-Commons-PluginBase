@@ -43,6 +43,7 @@ public abstract class ABukkitPlugin<T extends ABukkitPlugin<T>>extends JavaPlugi
     protected final Statistics mStatistics;
     // 缓存
     private AManager<?> mCachedMan=null;
+    private boolean mForceNoStatistics=false;
 
     /**
      * 新建一个插件实例
@@ -55,6 +56,7 @@ public abstract class ABukkitPlugin<T extends ABukkitPlugin<T>>extends JavaPlugi
         ABukkitPlugin.mInstances.put((Class<? extends ABukkitPlugin<?>>)this.getClass(),this);
         /** 实例化统计类 */
         this.mStatistics=new Statistics(this);
+        if(this.getDescription().getVersion().split("\\.").length>3) this.mForceNoStatistics=true;
         /** 设置Log默认前缀 */
         Log.setMsgPrefix("§7[§a"+getName()+"§7]§3");
         /** 设置CommentedYaml的日志器 */
@@ -227,7 +229,7 @@ public abstract class ABukkitPlugin<T extends ABukkitPlugin<T>>extends JavaPlugi
 
     public void setStatistics(boolean pEnable){
         try{
-            this.mStatistics.setEnable(pEnable);
+            this.mStatistics.setEnable(this.mForceNoStatistics?false:pEnable);
         }catch(Throwable ignore){
         }
     }
